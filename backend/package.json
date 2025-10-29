@@ -1,0 +1,19 @@
+{
+  "name": "monitoreo-backend",
+  "version": "1.0.0",
+  "description": "Backend del sistema de monitoreo distribuido de recursos en entornos virtualizados",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "mariadb": "^3.4.5"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

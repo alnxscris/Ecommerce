@@ -1,0 +1,75 @@
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import pool from '../db.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+// Registro de usuario
+export const register = async (req, res) => {
+  const { nombre_usuario, correo_usuario, celular_usuario, contrasena } = req.body;
+
+  try {
+    const [existe] = await pool.query(
+      'SELECT * FROM usuarios WHERE correo_usuario = ? OR nombre_usuario = ?',
+      [correo_usuario, nombre_usuario]
+    );
+    if (existe.length > 0) {
+      return res.status(400).json({ mensaje: 'El correo o nombre de usuario ya están registrados.' });
+    }
+
+    //contraseña encriptada
+    const salt = await bcrypt.genSalt(10);
+    const contrasena_hash = await bcrypt.hash(contrasena, salt);
+
+    //insertar nuevo usuario
+    await pool.query(
+      'INSERT INTO usuarios (nombre_usuario, correo_usuario, celular_usuario, contrasena_hash) VALUES (?, ?, ?, ?)',
+      [nombre_usuario, correo_usuario, celular_usuario, contrasena_hash]
+    );
+
+    res.status(201).json({ mensaje: 'Usuario registrado correctamente.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al registrar el usuario.' });
+  }
+};
+
+//inicio de sesion
+export const login = async (req, res) => {
+  const {correo_usuario, contrasena} = req.body;
+
+  try {
+    const [rows] = await pool.query('SELECT * FROM usuarios WHERE correo_usuario = ?', [correo_usuario]);
+    if (rows.length === 0) {
+      return res.status(400).json({ mensaje: 'Correo no encontrado.' });
+    }
+
+    const usuario = rows[0];
+    const contrasenaValida = await bcrypt.compare(contrasena, usuario.contrasena_hash);
+
+    if (!contrasenaValida) {
+      return res.status(401).json({ mensaje: 'Contraseña incorrecta.' });
+    }
+
+    // Crear token JWT
+    const token = jwt.sign(
+      { id_usuario: usuario.id_usuario, correo: usuario.correo_usuario },
+      process.env.JWT_SECRET,
+      { expiresIn: '2h' }
+    );
+
+    res.json({
+      mensaje: 'Inicio de sesión exitoso.',
+      token,
+      usuario: {
+        id_usuario: usuario.id_usuario,
+        nombre_usuario: usuario.nombre_usuario,
+        correo_usuario: usuario.correo_usuario,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al iniciar sesión.' });
+  }
+};

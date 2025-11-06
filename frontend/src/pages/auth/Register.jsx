@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { registerUser } from '../../services/auth'; //autenticacion de usuario
 
 const Register = () => {
   const navigate = useNavigate();
@@ -18,24 +19,24 @@ const Register = () => {
     setFormData((s) => ({ ...s, [name]: value }));
   };
 
-  const onSubmit = (e) => {
+ //si no funca borrar esto
+  const onSubmit = async (e) => {
     e.preventDefault();
+    setError('');
 
-    // Validación simple
+    //Validación simple
     if (!formData.nombre || !formData.email || !formData.password) {
       setError('Por favor, complete todos los campos.');
       return;
+    } try {
+      const res = await registerUser(formData);
+      console.log("Usuario registrado:", res);
+      setSuccess(true);
+      setTimeout(() => navigate('/home'), 2000);
+    } catch (err) {
+      console.error(err);
+      setError('Error al registrar. Intente nuevamente.');
     }
-
-    setError('');
-    setSuccess(true);
-
-    console.log('Datos enviados:', formData);
-
-    // Mostrar mensaje y luego redirigir
-    setTimeout(() => {
-      navigate('/home');
-    }, 2000); // redirige después de 2 segundos
   };
 
   return (

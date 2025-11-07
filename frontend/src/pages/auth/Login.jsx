@@ -17,13 +17,28 @@ const Login = () => {
       return;
     } try {
       const res = await loginUser({ email, password });
+      if (!res.token || !res.user) {
+        setError('Respuesta inválida del servidor.');
+        return;
+      }
+      
+      localStorage.setItem("user", JSON.stringify(res.user));
+      navigate('/home');
+    } catch (err) {
+      console.error("Error en login:", err);
+      setError(err.mensaje || 'Credenciales inválidas.');
+    }
+    
+    
+    /*try {
+      const res = await loginUser({ email, password });
       console.log("Sesión iniciada:", res);
       localStorage.setItem("user", JSON.stringify(res.user));
       navigate('/home');
     } catch (err) {
       console.error(err);
       setError('Credenciales inválidas.');
-    }
+    }*/
   };
 
   return (

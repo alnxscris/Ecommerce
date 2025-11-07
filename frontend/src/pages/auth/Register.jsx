@@ -19,7 +19,6 @@ const Register = () => {
     setFormData((s) => ({ ...s, [name]: value }));
   };
 
- //si no funca borrar esto
   const onSubmit = async (e) => {
     e.preventDefault();
     setError('');

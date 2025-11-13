@@ -1,9 +1,10 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import ProductCard from "../components/ui/ProductCard";
-import { SECTIONS } from "../services/products";
+import { getInventory } from "../services/inventory";
 import "../styles/pages/gifts.css";
 
-const Row = ({ title, items, onOpen }) => {
+const Row = ({ title, items, navigate}) => {
   const scrollerRef = useRef(null);
   const scrollBy = (dir) =>
     scrollerRef.current?.scrollBy({ left: dir * 320, behavior: "smooth" });
@@ -19,11 +20,16 @@ const Row = ({ title, items, onOpen }) => {
       </header>
 
       <div className="gifts-row" ref={scrollerRef}>
-        {items.map((p, idx) => (
+        {items.map((p) => (
           <ProductCard
-            key={`${title}-${idx}`}
-            product={p}
-            onDetails={() => onOpen(p)}
+            key={p.id_producto}
+            product={{
+              id: p.id_producto,
+              title: p.nombre_producto,
+              price: p.precio_producto,
+              image: p.imagen_url,
+              descripcion: p.descripcion_producto,
+            }}
           />
         ))}
       </div>
@@ -31,14 +37,30 @@ const Row = ({ title, items, onOpen }) => {
   );
 };
 
-const Gifts = () => {
+export default function Gifts() {
+  const [products, setProducts] = useState([]);
   const [detail, setDetail] = useState(null); // producto activo para el modal
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    const fetchInventory = async () => {
+      try {
+        const { inventario } = await getInventory();
+        setProducts(inventario);
+      } catch (err) {
+        console.error("Error al cargar productos:", err);
+      }
+    };
+    fetchInventory();
+  }, []);
 
   return (
     <div className="gifts-page">
-      {SECTIONS.map(({ title, items }) => (
-        <Row key={title} title={title} items={items} onOpen={setDetail} />
-      ))}
+        <Row
+          title="Regalos disponibles"
+          items={products} 
+          navigate={navigate} 
+          onOpen={(p) => navigate(`/regalos/${p.id_producto}`)} />
 
       {/* Modal de detalles (solo frontend) */}
       {detail && (
@@ -68,5 +90,3 @@ const Gifts = () => {
     </div>
   );
 };
-
-export default Gifts;

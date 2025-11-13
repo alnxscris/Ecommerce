@@ -19,14 +19,22 @@ export const register = async (req, res) => {
       [correo_usuario, nombre_usuario]
     );
     if (existe.length > 0) {
-      return res.status(400).json({ mensaje: 'El correo o nombre de usuario ya están registrados.' });
+      return res.status(409).json({ mensaje: 'El correo o nombre de usuario ya están registrados.' });
+    }
+
+    //Verificar si la contraseña ya está en uso
+    const usuarios = await pool.query('SELECT contrasena_hash FROM usuarios');
+    for (const u of usuarios) {
+      const misma = await bcrypt.compare(contrasena, u.contrasena_hash);
+      if (misma) {
+        return res.status(400).json({ mensaje: 'Esa contraseña ya está en uso.' });
+      }
     }
 
     //contraseña encriptada
     const salt = await bcrypt.genSalt(10);
     const contrasena_hash = await bcrypt.hash(contrasena, salt);
 
-    //despues borramos lol
     console.log("Insertando usuario:", { nombre_usuario, correo_usuario, contrasena_hash });
     //insertar nuevo usuario
     await pool.query(
@@ -34,7 +42,6 @@ export const register = async (req, res) => {
       [nombre_usuario, correo_usuario, contrasena_hash]
     );
 
-    //lo borramos despues x2
     console.log("Usuario insertado correctamente");
 
     res.status(201).json({ mensaje: 'Usuario registrado correctamente.' });

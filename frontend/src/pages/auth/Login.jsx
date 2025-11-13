@@ -18,10 +18,13 @@ const Login = () => {
     } try {
       const res = await loginUser({ email, password });
       if (!res.token || !res.user) {
-        setError('Respuesta inválida del servidor.');
+        //validar estructura de la respuesta
+        console.error('Respuesta invalida del servidor.', res);
+        setError('Ocurrio un error al iniciar sesión. Intente nuevamente');
         return;
       }
       
+      //guarda datos del usuario en el almacenamiento local
       localStorage.setItem("user", JSON.stringify(res.user));
       navigate('/home');
     } catch (err) {

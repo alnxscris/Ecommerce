@@ -1,4 +1,6 @@
-// src/services/products.js
+/*/ src/services/products.js
+//obsoleto ahora que se utiliza la bd u-u 
+//solo faltan registrar los productos en la bd
 
 export const SECTIONS = [
   {
@@ -51,4 +53,4 @@ export const ALL_PRODUCTS = SECTIONS.flatMap(({ items }) =>
 export function getProduct(idOrSlug) {
   const key = slugify(idOrSlug || "");
   return ALL_PRODUCTS.find((p) => p.id === key || p.slug === key) || null;
-}
+}*/

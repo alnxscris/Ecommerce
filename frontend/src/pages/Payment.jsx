@@ -1,25 +1,47 @@
-import { useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { api } from "../services/api";
+import { getCart, removeCartItem } from "../services/cart";
 import "../styles/pages/payment.css";
 
 export default function Payment() {
+  const { state } = useLocation(); // viene de Shipping.jsx → { id_pedido }
   const navigate = useNavigate();
-  const shipping = useMemo(() => {
-    const raw = localStorage.getItem("shipping");
-    return raw ? JSON.parse(raw) : null;
-  }, []);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  
+  const handleConfirm = async () => {
+    if (!state?.id_pedido) {
+      alert("No se encontró el pedido a confirmar.");
+      navigate("/envio");
+      return;
+    }
 
-  useEffect(() => {
-    // Si llegan directo sin llenar datos, redirige
-    if (!shipping) navigate("/envio");
-  }, [shipping, navigate]);
+    setLoading(true);
+    setError("");
 
-  const handleConfirm = () => {
-    // Aquí solo simulamos la confirmación
-    alert("¡Gracias! Confirmamos tu pago. Te contactaremos para la entrega.");
-    localStorage.removeItem("cart");
-    // Podrías guardar una orden en backend aquí si tuvieras API
-    navigate("/home");
+    try {
+      // Confirmar pago en el backend
+      await api.post("/api/order/confirmar-pago", { id_pedido: state.id_pedido });
+
+      // Limpiar carrito de la BD
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (user?.id_usuario) {
+        const { carrito } = await getCart(user.id_usuario);
+        await Promise.all(
+          carrito.map((item) => removeCartItem(user.id_usuario, item.id_producto))
+        );
+      }
+
+      alert("¡Gracias! Confirmamos tu pago. Te contactaremos para la entrega.");
+      localStorage.removeItem("cart"); // limpiar carrito local
+      navigate("/home"); 
+    } catch (err) {
+      console.error("Error al confirmar pago:", err);
+      setError("No se pudo confirmar el pago.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -33,8 +55,11 @@ export default function Payment() {
         </p>
       </div>
 
-      <button className="btn btn--primary btn--block" onClick={handleConfirm}>
-        Confirmar pago
+      {error && <p className="error">{error}</p>}
+
+      <button className="btn btn--primary btn--block" onClick={handleConfirm} disabled={loading}>
+
+      {loading ? "Confirmando..." : "Confirmar pago"}
       </button>
     </section>
   );

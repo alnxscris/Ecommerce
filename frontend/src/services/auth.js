@@ -2,8 +2,12 @@ import { api } from "./api";
 
 //registrar nuevo usuario
 export const registerUser = async (data) => {
-  const res = await api.post("/api/auth/register", data);
-  return res;
+  try {
+    const res = await api.post("/api/auth/register", data);
+    return res;
+  } catch (err) {
+    throw err.mensaje ? err : { mensaje: "Error desconocido al registrar"};
+  }
 };
 
 //iniciar sesión
@@ -17,7 +21,7 @@ export const loginUser = async (data) => {
     }
     return res;
   } catch (err) {
-    throw err.response?.data || { mensaje: "Error desconocido." };
+    throw err.mensaje ? err : { mensaje: "Error desconocido al iniciar sesión." };
   }
 };
 

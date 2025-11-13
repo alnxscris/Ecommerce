@@ -1,5 +1,5 @@
 /*/ src/services/products.js
-//obsoleto ahora que se utiliza la bd u-u 
+//obsoleto: ahora que se utiliza la bd
 //solo faltan registrar los productos en la bd
 
 export const SECTIONS = [

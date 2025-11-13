@@ -5,7 +5,7 @@ import { getCart, removeCartItem } from "../services/cart";
 import "../styles/pages/payment.css";
 
 export default function Payment() {
-  const { state } = useLocation(); // viene de Shipping.jsx → { id_pedido }
+  const { state } = useLocation(); 
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");

@@ -4,15 +4,27 @@ import pool from '../db.js';
 // Obtener todos los productos del inventario
 export const getInventory = async (req, res) => {
     try {
-        // Obtenemos todos los productos de la tabla 'productos'
-        const productos = await pool.query('SELECT * FROM productos');
+        const productos = await pool.query('SELECT * FROM productos ORDER BY categoria, nombre_producto');
 
         if (productos.length === 0) {
             return res.status(404).json({ mensaje: 'No hay productos en el inventario.' });
         }
 
-        // Responder con la lista de productos
-        res.status(200).json({ inventario: productos });
+        // Agrupar por categoría
+        const porCategoria = productos.reduce((acc, producto) => {
+            const cat = producto.categoria || 'Otros regalos';
+            if (!acc[cat]) acc[cat] = [];
+            acc[cat].push(producto);
+            return acc;
+        }, {});
+
+        // Convertimos en un array de secciones
+        const secciones = Object.entries(porCategoria).map(([categoria, items]) => ({
+            title: categoria,
+            items
+        }));
+
+        res.status(200).json({ inventario: productos, secciones });
     } catch (error) {
         console.error('Error al obtener el inventario:', error);
         res.status(500).json({ mensaje: 'Error al obtener el inventario.' });

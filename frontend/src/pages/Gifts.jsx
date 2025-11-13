@@ -38,15 +38,14 @@ const Row = ({ title, items, navigate}) => {
 };
 
 export default function Gifts() {
-  const [products, setProducts] = useState([]);
-  const [detail, setDetail] = useState(null); // producto activo para el modal
+  const [secciones, setSecciones] = useState([]);
   const navigate = useNavigate();
   
   useEffect(() => {
     const fetchInventory = async () => {
       try {
-        const { inventario } = await getInventory();
-        setProducts(inventario);
+        const { secciones } = await getInventory();
+        setSecciones(secciones);
       } catch (err) {
         console.error("Error al cargar productos:", err);
       }
@@ -56,37 +55,14 @@ export default function Gifts() {
 
   return (
     <div className="gifts-page">
+      {secciones.map((seccion, idx) => (
         <Row
-          title="Regalos disponibles"
-          items={products} 
-          navigate={navigate} 
-          onOpen={(p) => navigate(`/regalos/${p.id_producto}`)} />
-
-      {/* Modal de detalles (solo frontend) */}
-      {detail && (
-        <div className="modal" role="dialog" aria-modal="true" onClick={() => setDetail(null)}>
-          <div className="modal__dialog" onClick={(e) => e.stopPropagation()}>
-            <button className="modal__close" aria-label="Cerrar" onClick={() => setDetail(null)}>×</button>
-
-            <div className="modal__grid">
-              <figure className="modal__media">
-                <img src={detail.image} alt={detail.title} />
-              </figure>
-
-              <div className="modal__info">
-                <h3 className="modal__title">{detail.title}</h3>
-                <p className="modal__price">S/. {detail.price}</p>
-                <p className="modal__desc">{detail.descripcion}</p>
-                <div className="modal__actions">
-                  <button className="btn">Añadir al carrito</button>
-                  <button className="btn btn--secondary" onClick={() => setDetail(null)}>Cerrar</button>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      )}
+          key={idx}
+          title={seccion.title} 
+          items={seccion.items} 
+          navigate={navigate}
+        />
+      ))}
     </div>
   );
 };

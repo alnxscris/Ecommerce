@@ -15,21 +15,12 @@ const toInputDate = (d) => d.toISOString().slice(0, 10);
 
 export default function Shipping() {
   const navigate = useNavigate();
-  const { state } = useLocation(); // viene de Cart.jsx → { id_usuario, productos, total }
+  const { state } = useLocation();
 
   // 🧹 Limpiar los datos guardados al entrar o refrescar
   useEffect(() => {
     localStorage.removeItem("shipping");
   }, []);
-
-  /* Si no hay carrito, vuelve a regalos
-  const cart = useMemo(() => {
-    const raw = localStorage.getItem("cart");
-    return raw ? JSON.parse(raw) : [];
-  }, []);
-  useEffect(() => {
-    if (!cart.length) navigate("/regalos");
-  }, [cart, navigate]);*/
 
   // Campos del formulario
   const [fullName, setFullName] = useState("");

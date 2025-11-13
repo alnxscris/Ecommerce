@@ -146,9 +146,7 @@ export const updateOrderStatus = async (req, res) => {
 //confirmar pago de un pedido
 //(OJO: a traves del botón del front "Confirmar pedido") 
 //en la bd se marcara como "CONFIRMADO" ya que en si es una simulacion de un 
-//pago real que no se realizara en serio (pq es de prueba xd)
-//PD: si se requiere integrar con una pasalera real, seria con una API, 
-//pero para fines del TF, no se realizara
+//pago real que no se realizara en serio
 
 export const confirmOrderPayment = async (req, res) => {
     const { id_pedido } = req.body;

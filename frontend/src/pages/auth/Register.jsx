@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { registerUser } from '../../services/auth'; //autenticacion de usuario
+import { registerUser } from "../../services/auth";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -19,23 +19,36 @@ const Register = () => {
     setFormData((s) => ({ ...s, [name]: value }));
   };
 
- //si no funca borrar esto
   const onSubmit = async (e) => {
     e.preventDefault();
-    setError('');
 
-    //Validación simple
+    // Validación simple
     if (!formData.nombre || !formData.email || !formData.password) {
       setError('Por favor, complete todos los campos.');
       return;
     } try {
+      setError('');
+      setSuccess(false);
+
+      console.log("Datos enviados", formData);
+
       const res = await registerUser(formData);
-      console.log("Usuario registrado:", res);
+
+      console.log("Respuesta del backend", res);
+
+      if (!res || res.error){
+       setError(res.error || "No se pudo registrar el usuario.");
+       setSuccess(false);
+       return;
+      }
+
       setSuccess(true);
-      setTimeout(() => navigate('/home'), 2000);
-    } catch (err) {
-      console.error(err);
-      setError('Error al registrar. Intente nuevamente.');
+      setTimeout(() => {
+        navigate("/home"); //redirigimos al home
+      }, 1500);
+    } catch (err){
+      console.error("Error al registrar:", err);
+      setError(err.mensaje || "No se pudo registrar el usuario.");
     }
   };
 

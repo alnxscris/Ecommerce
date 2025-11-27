@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { registerUser } from "../../services/auth";
+import { registerUser, loginUser } from "../../services/auth";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -20,37 +20,64 @@ const Register = () => {
   };
 
   const onSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    // Validación simple
-    if (!formData.nombre || !formData.email || !formData.password) {
-      setError('Por favor, complete todos los campos.');
-      return;
-    } try {
-      setError('');
+  if (!formData.nombre || !formData.email || !formData.password) {
+    setError('Por favor, complete todos los campos.');
+    return;
+  }
+  
+  try {
+    setError('');
+    setSuccess(false);
+
+    console.log("Datos enviados", formData);
+
+    const res = await registerUser(formData);
+
+    console.log("Respuesta del backend", res);
+
+    if (!res || res.error) {
+      setError(res.error || "No se pudo registrar el usuario.");
       setSuccess(false);
-
-      console.log("Datos enviados", formData);
-
-      const res = await registerUser(formData);
-
-      console.log("Respuesta del backend", res);
-
-      if (!res || res.error){
-       setError(res.error || "No se pudo registrar el usuario.");
-       setSuccess(false);
-       return;
-      }
-
-      setSuccess(true);
-      setTimeout(() => {
-        navigate("/home"); //redirigimos al home
-      }, 1500);
-    } catch (err){
-      console.error("Error al registrar:", err);
-      setError(err.mensaje || "No se pudo registrar el usuario.");
+      return;
     }
-  };
+
+    setSuccess(true);
+
+    // NUEVO: Hacer login automáticamente
+    try {
+      const loginRes = await loginUser({ 
+        email: formData.email, 
+        password: formData.password 
+      });
+
+      if (loginRes.token && loginRes.user) {
+        // Guardar usuario en localStorage
+        localStorage.setItem("user", JSON.stringify(loginRes.user));
+        
+        setTimeout(() => {
+          navigate("/home"); // Ir directo a home
+        }, 1500);
+      } else {
+        // Si falla el login automático, ir a login manual
+        setTimeout(() => {
+          navigate("/inicio-sesion");
+        }, 1500);
+      }
+    } catch (loginErr) {
+      console.error("Error en login automático:", loginErr);
+      // Si falla, ir a login manual
+      setTimeout(() => {
+        navigate("/inicio-sesion");
+      }, 1500);
+    }
+
+  } catch (err) {
+    console.error("Error al registrar:", err);
+    setError(err.mensaje || "No se pudo registrar el usuario.");
+  }
+};
 
   return (
     <section className="auth">

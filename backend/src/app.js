@@ -9,6 +9,7 @@ import cartRoutes from './routes/cart.js'; //cart
 import inventoryRoutes from './routes/inventory.js'; //inventory
 import orderRoutes from './routes/order.js';  //order
 import destinatariosRoutes from "./routes/destinatarios.js";
+import commentRoutes from './routes/comment.js'; //comentarios
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/order', orderRoutes);
 app.use("/api/destinatarios", destinatariosRoutes);
+app.use('/api/comments', commentRoutes);
 
 // Ruta de estado
 app.get('/status', (req, res) => {

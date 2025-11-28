@@ -24,7 +24,6 @@ export const api = {
     }
     return json;
   },
-  
   //adicionamos para el inventario
   put: async (endpoint, data) => {
     const res = await fetch(`${BASE_URL}${endpoint}`, {
@@ -36,15 +35,10 @@ export const api = {
     if (!res.ok) throw json || { mensaje: "Error en la petición (PUT)." };
     return json;
   },
-
-  delete: async (endpoint, data) => {
-    const res = await fetch(`${BASE_URL}${endpoint}`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    body: data ? JSON.stringify(data) : undefined
-  });
-  const json = await res.json().catch(() => ({}));
-  if (!res.ok) throw json || { mensaje: "Error en la petición (DELETE)." };
-  return json;
-  }
+  delete: async (endpoint) => {
+    const res = await fetch(`${BASE_URL}${endpoint}`, { method: "DELETE" });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) throw json || { mensaje: "Error en la petición (DELETE)." };
+    return json;
+  },
 };

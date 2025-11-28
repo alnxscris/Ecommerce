@@ -1,9 +1,10 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import ProductCard from "../components/ui/ProductCard";
-import { SECTIONS } from "../services/products";
+import { getInventory } from "../services/inventory";
 import "../styles/pages/gifts.css";
 
-const Row = ({ title, items, onOpen }) => {
+const Row = ({ title, items, navigate}) => {
   const scrollerRef = useRef(null);
   const scrollBy = (dir) =>
     scrollerRef.current?.scrollBy({ left: dir * 320, behavior: "smooth" });
@@ -19,11 +20,16 @@ const Row = ({ title, items, onOpen }) => {
       </header>
 
       <div className="gifts-row" ref={scrollerRef}>
-        {items.map((p, idx) => (
+        {items.map((p) => (
           <ProductCard
-            key={`${title}-${idx}`}
-            product={p}
-            onDetails={() => onOpen(p)}
+            key={p.id_producto}
+            product={{
+              id: p.id_producto,
+              title: p.nombre_producto,
+              price: p.precio_producto,
+              image: p.imagen_url,
+              descripcion: p.descripcion_producto,
+            }}
           />
         ))}
       </div>
@@ -31,42 +37,32 @@ const Row = ({ title, items, onOpen }) => {
   );
 };
 
-const Gifts = () => {
-  const [detail, setDetail] = useState(null); // producto activo para el modal
+export default function Gifts() {
+  const [secciones, setSecciones] = useState([]);
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    const fetchInventory = async () => {
+      try {
+        const { secciones } = await getInventory();
+        setSecciones(secciones);
+      } catch (err) {
+        console.error("Error al cargar productos:", err);
+      }
+    };
+    fetchInventory();
+  }, []);
 
   return (
     <div className="gifts-page">
-      {SECTIONS.map(({ title, items }) => (
-        <Row key={title} title={title} items={items} onOpen={setDetail} />
+      {secciones.map((seccion, idx) => (
+        <Row
+          key={idx}
+          title={seccion.title} 
+          items={seccion.items} 
+          navigate={navigate}
+        />
       ))}
-
-      {/* Modal de detalles (solo frontend) */}
-      {detail && (
-        <div className="modal" role="dialog" aria-modal="true" onClick={() => setDetail(null)}>
-          <div className="modal__dialog" onClick={(e) => e.stopPropagation()}>
-            <button className="modal__close" aria-label="Cerrar" onClick={() => setDetail(null)}>×</button>
-
-            <div className="modal__grid">
-              <figure className="modal__media">
-                <img src={detail.image} alt={detail.title} />
-              </figure>
-
-              <div className="modal__info">
-                <h3 className="modal__title">{detail.title}</h3>
-                <p className="modal__price">S/. {detail.price}</p>
-                <p className="modal__desc">{detail.descripcion}</p>
-                <div className="modal__actions">
-                  <button className="btn">Añadir al carrito</button>
-                  <button className="btn btn--secondary" onClick={() => setDetail(null)}>Cerrar</button>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      )}
     </div>
   );
 };
-
-export default Gifts;

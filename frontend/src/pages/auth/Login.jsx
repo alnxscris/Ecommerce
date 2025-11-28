@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { loginUser } from '../../services/auth'; //autenticacion de usuario
 
 const Login = () => {
   const navigate = useNavigate();
@@ -8,17 +9,29 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
+
     if (!email || !password) {
       setError('Por favor, complete todos los campos.');
       return;
+    } try {
+      const res = await loginUser({ email, password });
+      if (!res.token || !res.user) {
+        //validar estructura de la respuesta
+        console.error('Respuesta invalida del servidor.', res);
+        setError('Ocurrio un error al iniciar sesión. Intente nuevamente');
+        return;
+      }
+      
+      //guarda datos del usuario en el almacenamiento local
+      localStorage.setItem("user", JSON.stringify(res.user));
+      navigate('/home');
+    } catch (err) {
+      console.error("Error en login:", err);
+      setError(err.mensaje || 'Credenciales inválidas.');
     }
-    setError('');
-
-    // TODO: integrar con backend / auth context.
-    // Si todo OK -> redirigir al Home:
-    navigate('/home');
+    
   };
 
   return (

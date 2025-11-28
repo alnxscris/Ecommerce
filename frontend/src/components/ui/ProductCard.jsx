@@ -13,7 +13,7 @@ const ProductCard = ({ product }) => (
       {/* Enlaza al detalle usando el slug del título */}
       <Link
         className="btn"
-        to={`/regalos/${product.title.replace(/\s+/g, "-").toLowerCase()}`}
+        to={`/regalos/${product.id}`}
       >
         Ver detalles
       </Link>

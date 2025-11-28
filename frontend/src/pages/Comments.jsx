@@ -1,98 +1,191 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { getComments, createComment, deleteComment } from "../services/comments";
 import "../styles/pages/comments.css";
 
-const TESTIMONIALS = [
-  {
-    img: "/images/imagen20.jpg",
-    alt: "Clienta celebrando con su box",
-    text:
-      "El detalle llegó tal cual la foto, muy cuidado y con un aroma riquísimo. Atención amable y rápida. A mi abuelita le encantó",
-    author: "Mariana D."
-  },
-  {
-    img: "/images/imagen22.jpg",
-    alt: "Clienta con su box de regalo",
-    text:
-      "¡Amo MiAri Detalles! Encontré el regalo perfecto y personalizado para mi tía. Fue único, hermoso y lleno de significado. ¡Volveré sin duda!",
-    author: "Camila P."
-  },
-  {
-    img: "/images/imagen21.jpg",
-    alt: "Cliente con box gourmet",
-    text:
-      "Excelente presentación y puntualidad. El box superó mis expectativas, a mi papá le encantó. 100% recomendado.",
-    author: "Luis R."
-  },
-];
+// Componente para mostrar estrellas
+const Stars = ({ rating, onRate, readOnly = false }) => {
+  return (
+    <div className="stars">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          className={`star ${star <= rating ? 'star--filled' : ''}`}
+          onClick={() => !readOnly && onRate(star)}
+          disabled={readOnly}
+          aria-label={`${star} estrella${star > 1 ? 's' : ''}`}
+        >
+          ★
+        </button>
+      ))}
+    </div>
+  );
+};
 
-export default function Comments() {
-  const items = useMemo(() => TESTIMONIALS, []);
-  const [idx, setIdx] = useState(0);
-  const touchStartX = useRef(null);
-
-  const prev = () => setIdx((i) => (i - 1 + items.length) % items.length);
-  const next = () => setIdx((i) => (i + 1) % items.length);
-  const goTo = (i) => setIdx(i);
-
-  // Teclado: ← →
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === "ArrowLeft") prev();
-      if (e.key === "ArrowRight") next();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [items.length]);
-
-  // Swipe básico
-  const onTouchStart = (e) => (touchStartX.current = e.touches[0].clientX);
-  const onTouchEnd = (e) => {
-    if (touchStartX.current == null) return;
-    const dx = e.changedTouches[0].clientX - touchStartX.current;
-    if (Math.abs(dx) > 40) (dx > 0 ? prev() : next());
-    touchStartX.current = null;
-  };
-
-  const t = items[idx];
+// Componente para un comentario individual
+const CommentCard = ({ comment, currentUserId, onDelete }) => {
+  const isOwner = comment.id_usuario === currentUserId;
+  const fecha = new Date(comment.creado_en).toLocaleDateString('es-PE', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
 
   return (
-    <section className="reviews-page">
-      <h2 className="reviews-title">Comentarios</h2>
-
-      <div
-        className="review-card"
-        role="region"
-        aria-roledescription="carrusel"
-        aria-label="Opiniones de clientes"
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
-      >
-        <button
-          className="review-nav review-nav--prev"
-          aria-label="Comentario anterior"
-          onClick={prev}
-        >
-          ‹
-        </button>
-
-        <div className="review-grid">
-          <figure className="review-media">
-            <img src={t.img} alt={t.alt} />
-          </figure>
-
-          <div className="review-content">
-            <blockquote className="review-text">“{t.text}”</blockquote>
-            {t.author && <cite className="review-author">— {t.author}</cite>}
+    <article className="comment-card">
+      
+      <div className="comment-content">
+        <header className="comment-header">
+          <div>
+            <h4 className="comment-author">{comment.nombre_usuario}</h4>
+            <Stars rating={comment.calificacion} readOnly />
           </div>
-        </div>
+          {isOwner && (
+            <button 
+              className="btn-delete"
+              onClick={() => onDelete(comment.id_comentario)}
+              aria-label="Eliminar comentario"
+            >
+              🗑️
+            </button>
+          )}
+        </header>
+        
+        <p className="comment-text">{comment.texto_comentario}</p>
+        <time className="comment-date">{fecha}</time>
+      </div>
+    </article>
+  );
+};
 
-        <button
-          className="review-nav review-nav--next"
-          aria-label="Siguiente comentario"
-          onClick={next}
-        >
-          ›
-        </button>
+export default function Comments() {
+  const [comentarios, setComentarios] = useState([]);
+  const [nuevoComentario, setNuevoComentario] = useState("");
+  const [calificacion, setCalificacion] = useState(5);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const id_usuario = user?.id_usuario;
+
+  // Cargar comentarios
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const { comentarios } = await getComments();
+        setComentarios(comentarios);
+      } catch (err) {
+        console.error("Error al cargar comentarios:", err);
+      }
+    };
+    fetchComments();
+  }, []);
+
+  // Agregar comentario
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (!id_usuario) {
+      setError("Debes iniciar sesión para comentar.");
+      return;
+    }
+
+    if (nuevoComentario.trim().length < 10) {
+      setError("El comentario debe tener al menos 10 caracteres.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await createComment({
+        id_usuario,
+        texto_comentario: nuevoComentario.trim(),
+        calificacion
+      });
+
+      // Recargar comentarios
+      const { comentarios } = await getComments();
+      setComentarios(comentarios);
+
+      // Limpiar formulario
+      setNuevoComentario("");
+      setCalificacion(5);
+      alert("¡Comentario publicado con éxito!");
+    } catch (err) {
+      console.error("Error al crear comentario:", err);
+      setError("No se pudo publicar el comentario.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Eliminar comentario
+  const handleDelete = async (id_comentario) => {
+    if (!confirm("¿Estás seguro de eliminar este comentario?")) return;
+
+    try {
+      await deleteComment(id_comentario, id_usuario);
+      setComentarios(comentarios.filter(c => c.id_comentario !== id_comentario));
+      alert("Comentario eliminado.");
+    } catch (err) {
+      console.error("Error al eliminar comentario:", err);
+      alert("No se pudo eliminar el comentario.");
+    }
+  };
+
+  return (
+    <section className="comments-page">
+      <h2 className="comments-title">Comentarios</h2>
+
+      {/* Formulario para nuevo comentario */}
+      {id_usuario ? (
+        <form className="comment-form" onSubmit={handleSubmit}>
+          <h3>Deja tu opinión</h3>
+          
+          <label>
+            <span>Tu calificación:</span>
+            <Stars rating={calificacion} onRate={setCalificacion} />
+          </label>
+
+          <label>
+            <span>Tu comentario:</span>
+            <textarea
+              value={nuevoComentario}
+              onChange={(e) => setNuevoComentario(e.target.value)}
+              placeholder="Comparte tu experiencia con MiAri Detalles..."
+              rows="4"
+              required
+              minLength="10"
+            />
+          </label>
+
+          {error && <p className="error">{error}</p>}
+
+          <button type="submit" className="btn btn--primary" disabled={loading}>
+            {loading ? "Publicando..." : "Publicar comentario"}
+          </button>
+        </form>
+      ) : (
+        <p className="login-prompt">
+          <a href="/login">Inicia sesión</a> para dejar tu comentario.
+        </p>
+      )}
+
+      {/* Lista de comentarios */}
+      <div className="comments-list">
+        {comentarios.length === 0 ? (
+          <p className="no-comments">Aún no hay comentarios. ¡Sé el primero!</p>
+        ) : (
+          comentarios.map((comment) => (
+            <CommentCard
+              key={comment.id_comentario}
+              comment={comment}
+              currentUserId={id_usuario}
+              onDelete={handleDelete}
+            />
+          ))
+        )}
       </div>
     </section>
   );

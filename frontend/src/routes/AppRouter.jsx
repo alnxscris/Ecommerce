@@ -1,3 +1,4 @@
+// src/routes/AppRouter.jsx
 import { Routes, Route } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
@@ -8,12 +9,10 @@ import Home from "../pages/Home";
 import Gifts from "../pages/Gifts";
 import GiftDetails from "../pages/GiftDetails";
 import Cart from "../pages/Cart";
-import Comments from "../pages/Comments";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import Shipping from "../pages/Shipping";
 import Payment from "../pages/Payment";
-
 
 const AppRouter = () => (
   <Routes>
@@ -30,7 +29,6 @@ const AppRouter = () => (
       <Route path="/regalos" element={<Gifts />} />
       <Route path="/regalos/:id" element={<GiftDetails />} />
       <Route path="/carrito" element={<Cart />} />
-      <Route path="/comentarios" element={<Comments />} />
       <Route path="/envio" element={<Shipping />} />
       <Route path="/pago" element={<Payment />} />
     </Route>

@@ -37,16 +37,6 @@ const Header = () => (
               Carrito
             </NavLink>
           </li>
-          <li>
-            <NavLink
-              to="/comentarios"
-              className={({ isActive }) =>
-                isActive ? "nav__link nav__link--active" : "nav__link"
-              }
-            >
-              Comentarios
-            </NavLink>
-          </li>
         </ul>
       </nav>
     </div>

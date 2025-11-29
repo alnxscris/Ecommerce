@@ -1,5 +1,5 @@
 //src/services/api.js
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://3.218.28.209:3000";
 
 export const api = {
   get: async (endpoint) => {

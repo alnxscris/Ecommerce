@@ -9,8 +9,10 @@ export const api = {
     if (!res.ok) {
       throw data || { mensaje: "Error al obtener datos (GET)." };
     }
+    // Devolvemos directamente el JSON (no res.data)
     return data;
   },
+
   post: async (endpoint, data) => {
     const res = await fetch(`${BASE_URL}${endpoint}`, {
       method: "POST",
@@ -24,8 +26,7 @@ export const api = {
     }
     return json;
   },
-  
-  //adicionamos para el inventario
+
   put: async (endpoint, data) => {
     const res = await fetch(`${BASE_URL}${endpoint}`, {
       method: "PUT",
@@ -39,12 +40,12 @@ export const api = {
 
   delete: async (endpoint, data) => {
     const res = await fetch(`${BASE_URL}${endpoint}`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    body: data ? JSON.stringify(data) : undefined
-  });
-  const json = await res.json().catch(() => ({}));
-  if (!res.ok) throw json || { mensaje: "Error en la petición (DELETE)." };
-  return json;
-  }
+      method: "DELETE",
+      headers: data ? { "Content-Type": "application/json" } : undefined,
+      body: data ? JSON.stringify(data) : undefined,
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) throw json || { mensaje: "Error en la petición (DELETE)." };
+    return json;
+  },
 };

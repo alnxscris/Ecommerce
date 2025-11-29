@@ -41,10 +41,282 @@
   border:1px solid #e5e7eb; border-radius:10px; padding:10px 12px; background:#fff;
 }
 
-/* Botón y error (ya usas .btn global) */
-.error{ color:#b91c1c; margin: 6px 0 6px; }
+/* Mensajes debajo de los botones */
+.error{
+  color:#b3261e;
+  background-color:#fee2e2;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  margin: 6px 0;
+  font-size: 0.9rem;
+}
+
+.info-message{
+  color:#166534;
+  background-color:#dcfce7;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  margin: 6px 0;
+  font-size: 0.9rem;
+}
+
+/* --- SECCIÓN DE COMENTARIOS POR PRODUCTO --- */
+
+.comments-section {
+  margin-top: 2.5rem;
+}
+
+.comments-section h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* Tarjeta del formulario y de cada comentario */
+.comment-form,
+.comment-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  padding: 1.5rem 1.75rem;
+  margin: 0 auto 1.25rem auto;
+  max-width: 900px;
+  width: 100%;          /* 👈 fuerza a usar el mismo ancho que el formulario */
+  box-sizing: border-box;
+}
+
+/* Campos del formulario */
+.comment-field {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.comment-field span {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.comment-field select {
+  padding: 0.35rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  font-size: 0.9rem;
+}
+
+.comment-field textarea {
+  width: 100%;
+  min-height: 90px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  padding: 0.6rem 0.8rem;
+  resize: vertical;
+  font-size: 0.9rem;
+}
+
+/* Botón de enviar dentro de la tarjeta */
+.comment-submit {
+  margin-top: 0.25rem;
+}
+
+/* Lista de comentarios */
+.comments-list {
+  margin-top: 0.5rem;
+}
+
+.comments-empty {
+  max-width: 900px;
+  margin: 0 auto;
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+/* Cabecera de cada comentario */
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.comment-author {
+  font-weight: 600;
+  margin: 0 0 0.15rem 0;
+}
+
+.comment-rating {
+  font-size: 0.9rem;
+  color: #f59e0b;
+}
+
+/* Texto del comentario */
+.comment-text {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+/* Botón de eliminar, alineado a la derecha */
+.comment-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.75rem;
+}
+
+.btn-delete-comment {
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  background-color: #ffe5e5;
+  color: #b3261e;
+}
 
 /* Responsive */
 @media (max-width: 980px){
   .gift-detail__grid{ grid-template-columns: 1fr; }
+
+  .comment-form,
+  .comment-card {
+    padding: 1.25rem 1.25rem;
+    margin-inline: 1rem;
+  }
+}
+
+/* Botón "Responder" */
+.btn-reply {
+  background: none;
+  border: none;
+  color: #fa406e;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 3px 8px;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+
+.btn-reply:hover {
+  background: rgba(235, 37, 110, 0.12);
+}
+
+/* Contenedor de lista de respuestas */
+.reply-list {
+  margin-top: 0.75rem;
+  margin-left: 1.8rem;
+  padding-left: 1rem;
+  border-left: 3px solid #e5e7eb;
+}
+
+/* Cada respuesta individual */
+.reply-item {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.6rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.05);
+}
+
+.reply-author {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #111827;
+}
+
+.reply-text {
+  margin-top: 3px;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+/* Formulario de respuesta */
+.reply-form {
+  margin-top: 10px;
+  margin-left: 1.8rem;
+}
+
+.reply-form textarea {
+  width: 100%;
+  min-height: 60px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  resize: vertical;
+  background: #fff;
+}
+
+.btn-reply-submit {
+  background: #f99b9b;
+  color: #fff;
+  padding: 6px 14px;
+  margin-top: 6px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.btn-reply-submit:hover {
+  background: #e59090;
+}
+
+/* Botón eliminar réplica */
+.btn-delete-reply {
+  background: #ffe5e5;
+  color: #b3261e;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.btn-delete-reply:hover {
+  background: #ffd4d4;
+}
+
+/* Contenedor de réplicas */
+.reply-list {
+  margin-top: 1rem;
+  margin-left: 1.2rem;
+  border-left: 3px solid #ffb9b9;
+  padding-left: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Caja de cada réplica */
+.reply-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #ffb9b9;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+}
+
+/* Texto */
+.reply-content {
+  font-size: 0.92rem;
+  color: #374151;
+}
+
+/* Botón eliminar reply */
+.btn-delete-reply {
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  border: none;
+  background: #ffe5e5;
+  color: #b3261e;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
 }

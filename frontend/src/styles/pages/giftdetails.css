@@ -185,3 +185,138 @@
     margin-inline: 1rem;
   }
 }
+
+/* Botón "Responder" */
+.btn-reply {
+  background: none;
+  border: none;
+  color: #fa406e;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 3px 8px;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+
+.btn-reply:hover {
+  background: rgba(235, 37, 110, 0.12);
+}
+
+/* Contenedor de lista de respuestas */
+.reply-list {
+  margin-top: 0.75rem;
+  margin-left: 1.8rem;
+  padding-left: 1rem;
+  border-left: 3px solid #e5e7eb;
+}
+
+/* Cada respuesta individual */
+.reply-item {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.6rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.05);
+}
+
+.reply-author {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #111827;
+}
+
+.reply-text {
+  margin-top: 3px;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+/* Formulario de respuesta */
+.reply-form {
+  margin-top: 10px;
+  margin-left: 1.8rem;
+}
+
+.reply-form textarea {
+  width: 100%;
+  min-height: 60px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  resize: vertical;
+  background: #fff;
+}
+
+.btn-reply-submit {
+  background: #f99b9b;
+  color: #fff;
+  padding: 6px 14px;
+  margin-top: 6px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.btn-reply-submit:hover {
+  background: #e59090;
+}
+
+/* Botón eliminar réplica */
+.btn-delete-reply {
+  background: #ffe5e5;
+  color: #b3261e;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.btn-delete-reply:hover {
+  background: #ffd4d4;
+}
+
+/* Contenedor de réplicas */
+.reply-list {
+  margin-top: 1rem;
+  margin-left: 1.2rem;
+  border-left: 3px solid #ffb9b9;
+  padding-left: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Caja de cada réplica */
+.reply-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #ffb9b9;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+}
+
+/* Texto */
+.reply-content {
+  font-size: 0.92rem;
+  color: #374151;
+}
+
+/* Botón eliminar reply */
+.btn-delete-reply {
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  border: none;
+  background: #ffe5e5;
+  color: #b3261e;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
